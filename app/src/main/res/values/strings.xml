@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">My new app</string>
+    <string name="textAnother">Другой текст и экран</string>
+</resources>
