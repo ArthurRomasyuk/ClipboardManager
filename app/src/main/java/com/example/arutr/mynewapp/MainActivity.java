@@ -16,10 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, ClipboardManager.OnPrimaryClipChangedListener {
-    private TextView copytext, pastetext;
     private ClipboardManager myClipboard;
     private ClipData myClip;
-    private Button btnCreate;
     private LinearLayout lMain;
 
     @Override
@@ -27,11 +25,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.clipboard_history);
         myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-        copytext = (EditText) findViewById(R.id.editText1);
-        pastetext = (EditText) findViewById(R.id.editText2);
-        btnCreate = (Button) findViewById(R.id.btnCreate);
         lMain = (LinearLayout) findViewById(R.id.lMain);
-        btnCreate.setOnClickListener(this);
         myClipboard.addPrimaryClipChangedListener(this);
     }
 
