@@ -17,6 +17,11 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.util.Log;
+import de.tavendo.autobahn.WebSocketConnection;
+import de.tavendo.autobahn.WebSocketException;
+import de.tavendo.autobahn.WebSocketHandler;
+
 
 import java.util.ArrayList;
 
@@ -24,14 +29,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private ClipboardManager myClipboard;
     private ClipData myClip;
     private ListView lMain;
-    ArrayList<String> clipboardList = new ArrayList<String>();
-    ArrayAdapter<String> adapter;
+    private ArrayList<String> clipboardList = new ArrayList<String>();
+    private ArrayAdapter<String> adapter;
+    private final WebSocketConnection mConnection = new WebSocketConnection();
+    private static final String TAG = "com.example.arutr";
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.clipboard_history);
+        start();
         myClipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         lMain = (ListView) findViewById(R.id.lMain);
         myClipboard.addPrimaryClipChangedListener(this);
@@ -87,7 +95,40 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (!existenceOfSimilarWordInArray) {
             clipboardList.add(text);
+            mConnection.sendTextMessage(text);
             adapter.notifyDataSetChanged();
         }
     }
+
+
+
+    private void start() {
+
+        final String wsuri = "ws://inbreathe.me:8042/";
+
+        try {
+            mConnection.connect(wsuri, new WebSocketHandler() {
+
+                @Override
+                public void onOpen() {
+                    Log.d(TAG, "Status: Connected to " + wsuri);
+                    mConnection.sendTextMessage("Hello, server!");
+                }
+
+                @Override
+                public void onTextMessage(String payload) {
+                    Log.d(TAG, "Got echo: " + payload);
+                }
+
+                @Override
+                public void onClose(int code, String reason) {
+                    Log.d(TAG, "Connection lost.");
+                }
+            });
+        } catch (WebSocketException e) {
+
+            Log.d(TAG, e.toString());
+        }
+    }
+
 }
